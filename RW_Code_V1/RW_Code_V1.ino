@@ -1,10 +1,12 @@
-#include <Adafruit_LSM6DSO32.h>
+#include <Adafruit_LSM6DSO32.h> //download Adafruit LSM6DS Library
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 #include <Servo.h> 
 //added for SD logging
-#include <SPI.h>
-#include <SD.h>
+#include <SPI.h> 
+#include <SD.h> // install SD library by Adafruit and Sparkfun
+
+HardwareSerial Serial2(PA3, PA2);   // intializes serial2 RX, TX
 
 Adafruit_LSM6DSO32 dso32;
 
@@ -114,8 +116,7 @@ void setup(void) {
   Serial.begin(115200);
   
   // Explicitly set the RX and TX pins for the built-in Serial2 (Bluetooth)
-  Serial2.setRx(PA3);
-  Serial2.setTx(PA2);
+  
   Serial2.begin(9600); 
 
   // Wait for USB Serial to connect so you don't miss the boot sequence
