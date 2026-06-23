@@ -1,1 +1,5 @@
 Pins should be here
+
+b7- 
+b10 - pwm out
+a3 - cs pin SD card
