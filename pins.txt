@@ -10,8 +10,8 @@ a10 - px BT
 a9 - tx BT
 5v - out + BC
 G - GND Flash
-a7 - mosi Flash
-a6 - miso Flash 
-a5 - sck Flash
+a7 - mosi
+a6 - miso 
+a5 - sck 
 a4 - cs flash
 
