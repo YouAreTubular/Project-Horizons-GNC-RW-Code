@@ -1,5 +1,17 @@
 Pins should be here
 
-b7- 
+b7- SDA flash card
 b10 - pwm out
 a3 - cs pin SD card
+G - GND sd card
+5v - VCC
+b6 - SCL Flash
+a10 - px BT
+a9 - tx BT
+5v - out + BC
+G - GND Flash
+a7 - mosi Flash
+a6 - miso Flash 
+a5 - sck Flash
+a4 - cs flash
+
