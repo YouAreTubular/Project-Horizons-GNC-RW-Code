@@ -10,7 +10,7 @@ A7 - MOSI
 A9 - TX BT
 A10 - PX BT
 
-B6 - SCL Flash
+B6 - SCL IMU
 B7 - SDA IMU
 B10 - PWM out IMU
 
