@@ -1,7 +1,7 @@
 Pins should be here
 
-b7- SDA flash card
-b10 - pwm out
+b7- SDA IMU
+b10 - pwm out IMU
 a3 - cs pin SD card
 G - GND sd card
 5v - VCC
@@ -14,4 +14,5 @@ a7 - mosi
 a6 - miso 
 a5 - sck 
 a4 - cs flash
+a1 - buzzer
 
