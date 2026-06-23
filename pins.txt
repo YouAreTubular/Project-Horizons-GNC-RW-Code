@@ -1,18 +1,18 @@
-Pins should be here
+5V - VCC
+5V - out + BC
 
-b7- SDA IMU
-b10 - pwm out IMU
-a3 - cs pin SD card
-G - GND sd card
-5v - VCC
-b6 - SCL Flash
-a10 - px BT
-a9 - tx BT
-5v - out + BC
+A1 - buzzer
+A3 - CS pin SD card
+A4 - CS Flash
+A5 - SCK
+A6 - MISO
+A7 - MOSI
+A9 - TX BT
+A10 - PX BT
+
+B6 - SCL Flash
+B7 - SDA IMU
+B10 - PWM out IMU
+
+G - GND SD card
 G - GND Flash
-a7 - mosi
-a6 - miso 
-a5 - sck 
-a4 - cs flash
-a1 - buzzer
-
