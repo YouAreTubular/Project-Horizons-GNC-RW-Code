@@ -1,10 +1,16 @@
 #include "Buzzer.h"
+#include "FlashLogger.h"
 #include "IMU.h"
 
 IMU imu;
+FlashLogger flashLogger(PA4);
 
 
 const int BUZZER_PIN = A1;
+const unsigned long LOG_INTERVAL_MS = 10;
+const unsigned long PRINT_INTERVAL_MS = 500;
+unsigned long lastLogMs = 0;
+unsigned long lastPrintMs = 0;
 
 HardwareSerial BT(PA10, PA9);  // RX, TX
 
@@ -30,29 +36,59 @@ void setup() {
   }
 
   Serial.println("IMU initialized.");
+
+  if (!flashLogger.begin("imu.csv")) {
+    Serial.print("Flash logger failed: ");
+    Serial.println(flashLogger.status());
+    Buzzer::errorTone(BUZZER_PIN);
+  } else {
+    flashLogger.logHeaderIfEmpty();
+    Serial.println("Flash logger initialized.");
+  }
 }
 
 void loop() {
-  IMUData data = imu.read();
+  unsigned long now = millis();
 
-  Serial.print("Accel: ");
-  Serial.print(data.accelX);
-  Serial.print(", ");
-  Serial.print(data.accelY);
-  Serial.print(", ");
-  Serial.println(data.accelZ);
+  if (now - lastLogMs >= LOG_INTERVAL_MS) {
+    IMUData data = imu.read();
 
-  Serial.print("Gyro: ");
-  Serial.print(data.gyroX);
-  Serial.print(", ");
-  Serial.print(data.gyroY);
-  Serial.print(", ");
-  Serial.println(data.gyroZ);
+    flashLogger.logIMU(
+      data.timestamp,
+      data.accelX,
+      data.accelY,
+      data.accelZ,
+      data.gyroX,
+      data.gyroY,
+      data.gyroZ,
+      data.temperature
+    );
+    flashLogger.flushIfDue(now);
+    lastLogMs += LOG_INTERVAL_MS;
 
-  Serial.print("Temp: ");
-  Serial.println(data.temperature);
+    if (now - lastPrintMs >= PRINT_INTERVAL_MS) {
+      Serial.print("Accel: ");
+      Serial.print(data.accelX);
+      Serial.print(", ");
+      Serial.print(data.accelY);
+      Serial.print(", ");
+      Serial.println(data.accelZ);
 
-  delay(500);
+      Serial.print("Gyro: ");
+      Serial.print(data.gyroX);
+      Serial.print(", ");
+      Serial.print(data.gyroY);
+      Serial.print(", ");
+      Serial.println(data.gyroZ);
+
+      Serial.print("Temp: ");
+      Serial.println(data.temperature);
+
+      lastPrintMs = now;
+    }
+  }
+
+  delay(1);
 }
 
 
