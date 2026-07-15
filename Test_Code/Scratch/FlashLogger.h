@@ -11,15 +11,35 @@ public:
   FlashLogger(uint8_t csPin, SPIClass *spi = &SPI)
     : transport(csPin, spi), flash(&transport) {}
 
-  bool begin(const char *filename) {
+  bool begin(const char *filename, uint8_t attempts = 5) {
     logFilename = filename;
 
-    SPI.setSCLK(PA5);
-    SPI.setMISO(PA6);
-    SPI.setMOSI(PA7);
-    SPI.begin();
+    pinMode(A3, OUTPUT);
+    digitalWrite(A3, HIGH);
+    pinMode(A4, OUTPUT);
+    digitalWrite(A4, HIGH);
 
-    if (!flash.begin()) {
+    SPI.setSCLK(A5);
+    SPI.setMISO(A6);
+    SPI.setMOSI(A7);
+    SPI.begin();
+    delay(10);
+
+    bool flashFound = false;
+    for (uint8_t i = 0; i < attempts; i++) {
+      digitalWrite(A3, HIGH);
+      digitalWrite(A4, HIGH);
+      delay(25);
+
+      if (flash.begin()) {
+        flashFound = true;
+        break;
+      }
+
+      delay(200);
+    }
+
+    if (!flashFound) {
       statusText = "FLASH CHIP NOT FOUND";
       return false;
     }

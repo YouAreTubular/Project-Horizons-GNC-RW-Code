@@ -9,10 +9,17 @@ FlashLogger flashLogger(PA4);
 const int BUZZER_PIN = A1;
 const unsigned long LOG_INTERVAL_MS = 10;
 const unsigned long PRINT_INTERVAL_MS = 500;
+const unsigned long SERIAL_WAIT_MS = 3000;
+const unsigned long START_WAIT_MS = 5000;
 unsigned long lastLogMs = 0;
 unsigned long lastPrintMs = 0;
 
 HardwareSerial BT(PA10, PA9);  // RX, TX
+
+void printBoth(const char *message) {
+  Serial.println(message);
+  BT.println(message);
+}
 
 void setup() {
   Buzzer::startupTone(BUZZER_PIN);  //buzzer makes noise at start
@@ -20,30 +27,33 @@ void setup() {
   Serial.begin(115200);  // USB Serial Monitor
   BT.begin(9600);        // HC-06
 
-  Serial.println("Bluetooth Ready");
-
-  while (!Serial) {
+  unsigned long serialStartMs = millis();
+  while (!Serial && millis() - serialStartMs < SERIAL_WAIT_MS) {
     delay(10);
   }
+
+  printBoth("Bluetooth Ready");
 
   waitForStart();
 
   if (!imu.begin()) {
-    Serial.println("IMU not found!");
+    printBoth("IMU not found!");
 
     while (1)
       ;
   }
 
-  Serial.println("IMU initialized.");
+  printBoth("IMU initialized.");
 
   if (!flashLogger.begin("imu.csv")) {
     Serial.print("Flash logger failed: ");
     Serial.println(flashLogger.status());
+    BT.print("Flash logger failed: ");
+    BT.println(flashLogger.status());
     Buzzer::errorTone(BUZZER_PIN);
   } else {
     flashLogger.logHeaderIfEmpty();
-    Serial.println("Flash logger initialized.");
+    printBoth("Flash logger initialized.");
   }
 }
 
@@ -94,10 +104,16 @@ void loop() {
 
 void waitForStart() {
   String input = "";
+  unsigned long startWaitBeganMs = millis();
 
-  Serial.println("Type 'start' to begin.");
+  printBoth("Type 'start' to begin, or wait 5 seconds for auto-start.");
 
   while (true) {
+    if (millis() - startWaitBeganMs >= START_WAIT_MS) {
+      printBoth("Auto-starting...");
+      return;
+    }
+
     while (Serial.available()) {
       char c = Serial.read();
 
@@ -105,11 +121,11 @@ void waitForStart() {
         input.trim();
 
         if (input.equalsIgnoreCase("start")) {
-          Serial.println("Starting...");
+          printBoth("Starting...");
           return;
         }
 
-        Serial.println("Invalid command. Type 'start' to begin.");
+        printBoth("Invalid command. Type 'start' to begin.");
         input = "";
       } else {
         input += c;
